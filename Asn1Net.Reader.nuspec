@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Asn1Net.Reader</id>
+    <version>1.0.0.0</version>
+    <title>Asn1Net.Reader</title>
+    <authors>Peter Polacko</authors>
+    <owners>Peter Polacko</owners>
+    <licenseUrl>https://github.com/peponeska/Asn1Net.Reader/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/peponeska/Asn1Net.Reader</projectUrl>
+
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Managed ASN.1 Parsing library.</description>
+    <releaseNotes />
+    <copyright>Copyright 2014-2015 Peter Polacko</copyright>
+    <tags>ASN.1 asn1 parser BER</tags>
+  </metadata>
+</package>
