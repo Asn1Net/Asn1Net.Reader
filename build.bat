@@ -28,7 +28,9 @@ mkdir %OUTDIR%\desktop || exit /b 1
 
 @rem copy files to output directory
 copy %SRCDIR%\pcl\Release\Asn1Net.Reader.dll %OUTDIR%\pcl || exit /b 1
+copy %SRCDIR%\pcl\Release\Asn1Net.Reader.XML %OUTDIR%\pcl || exit /b 1
 copy %SRCDIR%\Release\Asn1Net.Reader.dll %OUTDIR%\desktop || exit /b 1
+copy %SRCDIR%\Release\Asn1Net.Reader.XML %OUTDIR%\desktop || exit /b 1
 
 @rem set license variables
 set LICENSEDIR=%OUTDIR%

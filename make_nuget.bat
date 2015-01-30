@@ -9,7 +9,9 @@ mkdir %NUGETDIR%\Asn1Net.Reader\lib\portable-net45+netcore45+wpa81+MonoAndroid1+
 mkdir %NUGETDIR%\Asn1Net.Reader\lib\net40 || exit /b 1
 
 copy Asn1Net.Reader\pcl\*.dll "%NUGETDIR%\Asn1Net.Reader\lib\portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1" || exit /b 1
+copy Asn1Net.Reader\pcl\*.xml "%NUGETDIR%\Asn1Net.Reader\lib\portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1" || exit /b 1
 copy Asn1Net.Reader\desktop\*.dll %NUGETDIR%\Asn1Net.Reader\lib\net40 || exit /b 1
+copy Asn1Net.Reader\desktop\*.xml %NUGETDIR%\Asn1Net.Reader\lib\net40 || exit /b 1
 
 copy Asn1Net.Reader\license.txt %NUGETDIR%\Asn1Net.Reader || exit /b 1
 copy Asn1Net.Reader\agpl-3.0.txt %NUGETDIR%\Asn1Net.Reader || exit /b 1
