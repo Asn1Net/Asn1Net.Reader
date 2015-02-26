@@ -73,7 +73,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-	<DocumentationFile>bin\Release\Asn1Net.Reader.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Asn1Net.Reader.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup Condition=" '$(Portability)' == 'Desktop' ">
     <Reference Include="System" />
@@ -84,6 +84,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Asn1Net.Reader.licenseheader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition=" '$(Portability)' == 'Desktop' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" Condition=" '$(Portability)' == 'PCL' " />

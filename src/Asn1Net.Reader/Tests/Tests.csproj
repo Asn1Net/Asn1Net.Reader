@@ -60,6 +60,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Asn1Net.Reader\Asn1Net.Reader.licenseheader">
+      <Link>Asn1Net.Reader.licenseheader</Link>
+    </None>
     <None Include="asn1_github_certificate_chain.asn1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
