@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Net.Asn1.Reader
 {
@@ -124,6 +125,102 @@ namespace Net.Asn1.Reader
             if (RawValue == null) throw new ArgumentNullException("RawValue");
 
             var resp = Encoding.UTF8.GetString(RawValue, 0, RawValue.Length);
+            return resp;
+        }
+
+        Regex numericStringRegex = new Regex(@"^[\d ]*$", RegexOptions.ECMAScript);
+        /// <summary>
+        /// Read the value of the given node as numeric string.
+        /// </summary>
+        /// <returns>Value of the given node as string.</returns>
+        public string ReadContentAsNumericString()
+        {
+            var resp = ReadContentAsString();
+
+            if (numericStringRegex.IsMatch(resp) == false)
+                throw new FormatException("Numeric string can contain only these characters: 0 1 2 3 4 5 6 7 8 9 0 SPACE.");
+
+            return resp;
+        }
+
+        /// <summary>
+        /// Read the value of the given node as IA5string.
+        /// </summary>
+        /// <returns>Value of the given node as string.</returns>
+        public string ReadContentAsIA5String()
+        {
+            return ReadContentAsString();
+        }
+
+        Regex printableStringRegex = new Regex(@"^[a-zA-Z0-9 \'\(\)\+\,\-\.\/\:\=\?]*$", RegexOptions.ECMAScript);
+        /// <summary>
+        /// Read the value of the given node as Printable string.
+        /// </summary>
+        /// <returns>Value of the given node as string.</returns>
+        public string ReadContentAsPrintableString()
+        {
+            var resp = ReadContentAsString();
+
+            if (printableStringRegex.IsMatch(resp) == false)
+                throw new FormatException("Found invalid character in input value for Printable string. Please refer to ITU-T X.680 specification.");
+
+            return resp;
+        }
+
+        /// <summary>
+        /// Read the value of the given node as T61string.
+        /// </summary>
+        /// <returns>Value of the given node as string.</returns>
+        public string ReadContentAsT61String()
+        {
+            return ReadContentAsString();
+        }
+
+        /// <summary>
+        /// Read the value of the given node as Graphic string.
+        /// </summary>
+        /// <returns>Value of the given node as string.</returns>
+        public string ReadContentAsGraphicString()
+        {
+            return ReadContentAsString();
+        }
+
+        /// <summary>
+        /// Read the value of the given node as General string.
+        /// </summary>
+        /// <returns>Value of the given node as string.</returns>
+        public string ReadContentAsGeneralString()
+        {
+            return ReadContentAsString();
+        }
+
+        /// <summary>
+        /// Read the value of the given node as BMPstring.
+        /// </summary>
+        /// <returns>Value of the given node as string.</returns>
+        public string ReadContentAsBmpString()
+        {
+            if (RawValue == null) throw new ArgumentNullException("RawValue");
+
+            var resp = Encoding.BigEndianUnicode.GetString(RawValue, 0, RawValue.Length);
+
+            return resp;
+        }
+
+        /// <summary>
+        /// Read the value of the given node as Universalstring.
+        /// </summary>
+        /// <returns>Value of the given node as string.</returns>
+        public string ReadContentAsUniversalString()
+        {
+            if (RawValue == null) throw new ArgumentNullException("RawValue");
+
+            var enc = Encoding.GetEncoding("utf-32BE");
+            if (enc == null)
+                throw new PlatformNotSupportedException("UTF-32 encoding is not supported on this platform.");
+            
+            var resp = enc.GetString(RawValue, 0, RawValue.Length);
+
             return resp;
         }
 

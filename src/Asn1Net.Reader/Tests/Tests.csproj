@@ -55,6 +55,7 @@
     <Compile Include="BerReaderTests\BerReaderExtensions.cs" />
     <Compile Include="BerReaderTests\Extensions.cs" />
     <Compile Include="BerReaderTests\Helpers.cs" />
+    <Compile Include="BerReaderTests\ReadStringValuesTests.cs" />
     <Compile Include="BerReaderTests\ReadTimeValuesTests.cs" />
     <Compile Include="BerReaderTests\ReadToEndTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
