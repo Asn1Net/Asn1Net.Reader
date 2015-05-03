@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Net.Asn1.Reader
@@ -119,6 +120,128 @@ namespace Net.Asn1.Reader
             // join values of oid with comma
             var oidValue = String.Join(".", oidValues);
             return oidValue;
+        }
+
+
+
+        /// <summary>
+        /// Extract Real value from binary encoded data.
+        /// </summary>
+        /// <param name="firstOctet">Information octet with base, mantissa and exponent information.</param>
+        /// <param name="rawValue">Raw encoded value.</param>
+        /// <returns>Extracted value.</returns>
+        internal static double ExtractRealFromBinaryEncoding(byte firstOctet, byte[] rawValue)
+        {
+            if (rawValue == null) throw new ArgumentNullException("rawValue");
+
+            //  M = S × N × 2^F
+            //  0 ≤ F < 4 
+            //  S = +1 or –1
+
+            // bit 7
+            var bit7 = firstOctet & 64;
+            var sign = bit7 == 64 ? -1 : +1;
+
+            // bits 6 to 5
+            var valueOfBase = 2;
+            switch ((firstOctet & 48) >> 4)
+            {
+                case 0:
+                    valueOfBase = 2;
+                    break;
+                case 1:
+                    valueOfBase = 8;
+                    break;
+                case 2:
+                    valueOfBase = 16;
+                    break;
+                default:
+                    throw new NotSupportedException("Encoded value of base reserved for future use.");
+            }
+
+            // bits 4 to 3
+            var ff = (firstOctet & 12) >> 2;
+
+            var exponentLength = (firstOctet & 3) + 1;
+            var exponentValueStartIdx = 1;
+            if (exponentLength == 3)
+            {
+                exponentValueStartIdx = 2;
+                exponentLength = (int)rawValue[1];
+            }
+
+            // read exponent
+
+            var subtrahendIntegerBytes = new byte[exponentLength];
+            subtrahendIntegerBytes[exponentLength - 1] = 128;
+
+            if (exponentLength > sizeof(long))
+                throw new PlatformNotSupportedException(
+                    "Length of exponent is greater than current used integer type on the platform.");
+
+            long baseInteger = 0;
+            var subtrahendInteger = 0;
+
+            for (var i = 0; i < exponentLength; i++, exponentValueStartIdx++)
+            {
+                baseInteger = (baseInteger << 8) | rawValue[exponentValueStartIdx];
+                subtrahendInteger = (subtrahendInteger << 8) | subtrahendIntegerBytes[i];
+            }
+
+            var exponent = (baseInteger & ~(subtrahendInteger)) - subtrahendInteger;
+
+            // read N to compute mantissa
+            var N = 0;
+            for (var i = 1 + exponentLength; i < rawValue.Length; i++)
+                N = (N << 8) | rawValue[i];
+
+            var mantissa = sign * N * Math.Pow(2, ff);
+            var res = mantissa * Math.Pow(valueOfBase, exponent);
+            return res;
+        }
+
+        /// <summary>
+        /// Extract Real value from decimal encoded data.
+        /// </summary>
+        /// <param name="rawValue">Raw encoded value.</param>
+        /// <returns>Extracted value.</returns>
+        internal static double ExtractRealFromDecimalEncoding(byte[] rawValue)
+        {
+            if (rawValue == null) throw new ArgumentNullException("rawValue");
+
+            var raw = new byte[rawValue.Length - 1];
+            Array.Copy(rawValue, 1, raw, 0, rawValue.Length - 1);
+
+            var base10Value = double.Parse(Encoding.UTF8.GetString(raw, 0, raw.Length), CultureInfo.InvariantCulture.NumberFormat);
+            return base10Value;
+        }
+
+        /// <summary>
+        /// Extract Real value from special encoded data.
+        /// </summary>
+        /// <param name="firstOctet">Information octet with base, mantissa and exponent information.</param>
+        /// <param name="rawValue">Raw encoded value.</param>
+        /// <returns>Extracted value.</returns>
+        internal static double ExtractRealFromSpecialValueEncoding(byte firstOctet, byte[] rawValue)
+        {
+            if (rawValue == null) throw new ArgumentNullException("rawValue");
+
+            if (rawValue.Length > 1)
+                throw new FormatException("All SpecialRealValues MUST be encoded by just one information octet, without octets for mantissa end exponent.");
+
+            switch (firstOctet & 0x43)
+            {
+                case 0x40:
+                    return double.PositiveInfinity;
+                case 0x41:
+                    return double.NegativeInfinity;
+                case 0x42:
+                    return double.NaN;
+                case 0x43:
+                    return -1 * 0.0d; // minus zero
+                default:
+                    throw new NotSupportedException("Special value reserved for future use.");
+            }
         }
     }
 }

@@ -11,9 +11,12 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using NUnit.Framework;
 
 namespace Net.Asn1.Reader.Tests.BerReaderTests
@@ -79,7 +82,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
             using (var berReader = new BerReader(memoryStream))
             {
                 // Then
-                Assert.AreEqual(Asn1NodeType.DocumentStart, berReader.CurrentNode.NodeType);    
+                Assert.AreEqual(Asn1NodeType.DocumentStart, berReader.CurrentNode.NodeType);
             }
 
             bool objectDisposed = false;
@@ -93,7 +96,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
                 objectDisposed = true;
             }
 
-            Assert.IsTrue(objectDisposed); 
+            Assert.IsTrue(objectDisposed);
 
 
             // Given
@@ -195,6 +198,33 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
 
             // Then
             Assert.IsTrue(res.SequenceEqual(skippedFirstByte));
+        }
+
+        /// <summary>
+        /// Test enum
+        /// </summary>
+        enum TestEnum
+        {
+            OptionOne = 1,
+            OptionTwo = 2
+        }
+
+        /// <summary>
+        /// Test reading value of Enumerated.
+        /// </summary>
+        [Test]
+        public void ReadEnumerated()
+        {
+            var encoded = File.ReadAllBytes("integer.asn1");
+
+            // When
+            var reader = Helpers.ReaderFromData(encoded);
+            var node = reader.Read();
+            node.RawValue = reader.ReadContentAsBuffer(node);
+            var value = node.ReadContentAsEnumerated<TestEnum>();
+
+            // Then
+            Assert.IsTrue(value == TestEnum.OptionOne);
         }
 
         /// <summary>

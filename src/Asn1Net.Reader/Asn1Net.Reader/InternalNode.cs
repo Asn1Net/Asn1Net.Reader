@@ -135,6 +135,9 @@ namespace Net.Asn1.Reader
         /// <returns>Value of the given node as string.</returns>
         public string ReadContentAsNumericString()
         {
+            if (Identifier.Tag != Asn1Type.NumericString)
+                throw new InvalidOperationException("Can only read value of NumericString node.");
+
             var resp = ReadContentAsString();
 
             if (numericStringRegex.IsMatch(resp) == false)
@@ -149,6 +152,9 @@ namespace Net.Asn1.Reader
         /// <returns>Value of the given node as string.</returns>
         public string ReadContentAsIA5String()
         {
+            if (Identifier.Tag != Asn1Type.Ia5String)
+                throw new InvalidOperationException("Can only read value of Ia5String node.");
+
             return ReadContentAsString();
         }
 
@@ -159,6 +165,9 @@ namespace Net.Asn1.Reader
         /// <returns>Value of the given node as string.</returns>
         public string ReadContentAsPrintableString()
         {
+            if (Identifier.Tag != Asn1Type.PrintableString)
+                throw new InvalidOperationException("Can only read value of PrintableString node.");
+
             var resp = ReadContentAsString();
 
             if (printableStringRegex.IsMatch(resp) == false)
@@ -173,6 +182,9 @@ namespace Net.Asn1.Reader
         /// <returns>Value of the given node as string.</returns>
         public string ReadContentAsT61String()
         {
+            if (Identifier.Tag != Asn1Type.T61String)
+                throw new InvalidOperationException("Can only read value of T61String node.");
+
             return ReadContentAsString();
         }
 
@@ -182,6 +194,9 @@ namespace Net.Asn1.Reader
         /// <returns>Value of the given node as string.</returns>
         public string ReadContentAsGraphicString()
         {
+            if (Identifier.Tag != Asn1Type.GraphicString)
+                throw new InvalidOperationException("Can only read value of GraphicString node.");
+
             return ReadContentAsString();
         }
 
@@ -191,6 +206,9 @@ namespace Net.Asn1.Reader
         /// <returns>Value of the given node as string.</returns>
         public string ReadContentAsGeneralString()
         {
+            if (Identifier.Tag != Asn1Type.GeneralString)
+                throw new InvalidOperationException("Can only read value of GeneralString node.");
+
             return ReadContentAsString();
         }
 
@@ -201,6 +219,9 @@ namespace Net.Asn1.Reader
         public string ReadContentAsBmpString()
         {
             if (RawValue == null) throw new ArgumentNullException("RawValue");
+
+            if (Identifier.Tag != Asn1Type.BmpString)
+                throw new InvalidOperationException("Can only read value of BmpString node.");
 
             var resp = Encoding.BigEndianUnicode.GetString(RawValue, 0, RawValue.Length);
 
@@ -214,6 +235,9 @@ namespace Net.Asn1.Reader
         public string ReadContentAsUniversalString()
         {
             if (RawValue == null) throw new ArgumentNullException("RawValue");
+
+            if (Identifier.Tag != Asn1Type.UniversalString)
+                throw new InvalidOperationException("Can only read value of UniversalString node.");
 
             var enc = Encoding.GetEncoding("utf-32BE");
             if (enc == null)
@@ -312,15 +336,15 @@ namespace Net.Asn1.Reader
             {
                 // binary encoding
                 case 128:
-                    return ExtractRealFromBinaryEncoding(firstOctet);
+                    return Helpers.ExtractRealFromBinaryEncoding(firstOctet, RawValue);
 
                 // decimal encoding
                 case 0:
-                    return ExtractRealFromDecimalEncoding();
+                    return Helpers.ExtractRealFromDecimalEncoding(RawValue);
 
                 // SpecialRealValue
                 case 64:
-                    return ExtractRealFromSpecialValueEncoding(firstOctet);
+                    return Helpers.ExtractRealFromSpecialValueEncoding(firstOctet, RawValue);
 
                 default:
                     throw new NotSupportedException("Unknown encoding type.");
@@ -328,115 +352,24 @@ namespace Net.Asn1.Reader
         }
 
         /// <summary>
-        /// Extract Real value from binary encoded data.
+        /// Read the value of the given node as Enumerated.
         /// </summary>
-        /// <param name="firstOctet">Information octet with base, mantissa and exponent information.</param>
-        /// <returns>Extracted value.</returns>
-        private double ExtractRealFromBinaryEncoding(byte firstOctet)
+        /// <returns>Value of the given node as Enumerated value.</returns>
+        public T ReadContentAsEnumerated<T>(T defaultValue = default(T)) where T : struct, IComparable, IFormattable
         {
-            //  M = S × N × 2^F
-            //  0 ≤ F < 4 
-            //  S = +1 or –1
+            if (RawValue == null) throw new ArgumentNullException("RawValue");
+            if (Identifier == null) throw new ArgumentNullException("Identifier");
+            if (Identifier.Tag != Asn1Type.Enumerated)
+                throw new InvalidOperationException("Can only read value of Enumerated node.");
 
-            // bit 7
-            var bit7 = firstOctet & 64;
-            var sign = bit7 == 64 ? -1 : +1;
+            var bigValue = new BigInteger(RawValue);
+            var stringValue = bigValue.ToString();
 
-            // bits 6 to 5
-            var valueOfBase = 2;
-            switch ((firstOctet & 48) >> 4)
+            if (Enum.IsDefined(typeof (T), Convert.ToInt32(stringValue)))
             {
-                case 0:
-                    valueOfBase = 2;
-                    break;
-                case 1:
-                    valueOfBase = 8;
-                    break;
-                case 2:
-                    valueOfBase = 16;
-                    break;
-                default:
-                    throw new NotSupportedException("Encoded value of base reserved for future use.");
+                return (T) Enum.Parse(typeof (T), stringValue, true);
             }
-
-            // bits 4 to 3
-            var ff = (firstOctet & 12) >> 2;
-
-            var exponentLength = (firstOctet & 3) + 1;
-            var exponentValueStartIdx = 1;
-            if (exponentLength == 3)
-            {
-                exponentValueStartIdx = 2;
-                exponentLength = (int)RawValue[1];
-            }
-
-            // read exponent
-
-            var subtrahendIntegerBytes = new byte[exponentLength];
-            subtrahendIntegerBytes[exponentLength - 1] = 128;
-
-            if (exponentLength > sizeof(long))
-                throw new PlatformNotSupportedException(
-                    "Length of exponent is greater than current used integer type on the platform.");
-
-            long baseInteger = 0;
-            var subtrahendInteger = 0;
-
-            for (var i = 0; i < exponentLength; i++, exponentValueStartIdx++)
-            {
-                baseInteger = (baseInteger << 8) | RawValue[exponentValueStartIdx];
-                subtrahendInteger = (subtrahendInteger << 8) | subtrahendIntegerBytes[i];
-            }
-
-            var exponent = (baseInteger & ~(subtrahendInteger)) - subtrahendInteger;
-
-            // read N to compute mantissa
-            var N = 0;
-            for (var i = 1 + exponentLength; i < RawValue.Length; i++)
-                N = (N << 8) | RawValue[i];
-
-            var mantissa = sign * N * Math.Pow(2, ff);
-            var res = mantissa * Math.Pow(valueOfBase, exponent);
-            return res;
-        }
-
-        /// <summary>
-        /// Extract Real value from decimal encoded data.
-        /// </summary>
-        /// <param name="firstOctet">Information octet with base, mantissa and exponent information.</param>
-        /// <returns>Extracted value.</returns>
-        private double ExtractRealFromDecimalEncoding()
-        {
-            var raw = new byte[RawValue.Length - 1];
-            Array.Copy(RawValue, 1, raw, 0, RawValue.Length - 1);
-
-            var base10Value = double.Parse(Encoding.UTF8.GetString(raw, 0, raw.Length), CultureInfo.InvariantCulture.NumberFormat);
-            return base10Value;
-        }
-
-        /// <summary>
-        /// Extract Real value from special encoded data.
-        /// </summary>
-        /// <param name="firstOctet">Information octet with base, mantissa and exponent information.</param>
-        /// <returns>Extracted value.</returns>
-        private double ExtractRealFromSpecialValueEncoding(byte firstOctet)
-        {
-            if (RawValue.Length > 1)
-                throw new FormatException("All SpecialRealValues MUST be encoded by just one information octet, without octets for mantissa end exponent.");
-
-            switch (firstOctet & 0x43)
-            {
-                case 0x40:
-                    return double.PositiveInfinity;
-                case 0x41:
-                    return double.NegativeInfinity;
-                case 0x42:
-                    return double.NaN;
-                case 0x43:
-                    return -1 * 0.0d; // minus zero
-                default:
-                    throw new NotSupportedException("Special value reserved for future use.");
-            }
+            return defaultValue;
         }
     }
 }
