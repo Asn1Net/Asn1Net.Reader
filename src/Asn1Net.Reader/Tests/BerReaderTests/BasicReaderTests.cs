@@ -11,12 +11,9 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using NUnit.Framework;
 
 namespace Net.Asn1.Reader.Tests.BerReaderTests
@@ -362,6 +359,83 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
             AssertReadEnd(reader, 1, Asn1Type.Set);
             AssertReadEod(reader);
         }
+
+
+        /// <summary>
+        /// Test reading signature from github certificate.
+        /// 
+        /// Certificate  ::=  SEQUENCE  {
+        ///     tbsCertificate TBSCertificate, 
+        ///     signatureAlgorithm   AlgorithmIdentifier, 
+        ///     signatureValue BIT STRING 
+        /// }
+        /// </summary>
+        [Test]
+        public void ReadCertificateSignature()
+        {
+            var encoded = File.ReadAllBytes("github.cer.asn1");
+
+            // When
+            var reader = Helpers.ReaderFromData(encoded);
+
+            // read whole ASN.1 structure
+            // first node is always (in this library at least) virtual
+            var node = reader.ReadToEnd();
+
+            // SEQUENCE  {
+            var certificateSequence = node.ChildNodes[0];
+
+            // according to RFC 5280 Certificate should be a sequence with 3 children
+            Assert.IsTrue(certificateSequence.ChildNodes.Count == 3);
+
+            // extract
+            // tbsCertificate TBSCertificate, 
+            var tbsCertificate = certificateSequence.ChildNodes[0];
+
+            // RFC 5280: definition - TBSCertificate  ::=  SEQUENCE
+            Assert.IsTrue(tbsCertificate.Identifier.Tag == Asn1Type.Sequence);
+
+            // extract
+            // signatureAlgorithm AlgorithmIdentifier,
+            var signatureAlgorithm = certificateSequence.ChildNodes[1];
+
+            // RFC 5280: definition - signatureAlgorithm   AlgorithmIdentifier
+            // AlgorithmIdentifier  ::=  SEQUENCE  {
+            //      algorithm OBJECT IDENTIFIER,
+            //      parameters ANY DEFINED BY algorithm OPTIONAL  }
+            //                           -- contains a value of the type
+            //                           -- registered for use with the
+            //                           -- algorithm object identifier value
+            Assert.IsTrue(signatureAlgorithm.Identifier.Tag == Asn1Type.Sequence);
+            var signature = signatureAlgorithm.ChildNodes[0];
+            var parameters = signatureAlgorithm.ChildNodes[1];
+
+            Assert.IsTrue(signature.Identifier.Tag == Asn1Type.ObjectIdentifier);
+            Assert.IsTrue(parameters.Identifier.Tag == Asn1Type.Null);
+
+            // extract
+            // signatureValue BIT STRING 
+            var signatureValueNode = certificateSequence.ChildNodes[2];
+
+            // RFC 5280: definition - signatureValue BIT STRING
+            Assert.IsTrue(signatureValueNode.Identifier.Tag == Asn1Type.BitString);
+            // } Sequence end
+
+            // ******* Now read value of only wanted nodes *******
+            // first read the value as bytes
+            signature.RawValue = reader.ReadContentAsBuffer(signature);
+            // then present appropriately
+            var signatureOidValue = signature.ReadContentAsObjectIdentifier();
+
+            signatureValueNode.RawValue = reader.ReadContentAsBuffer(signatureValueNode);
+            var signatureValue = signatureValueNode.ReadContentAsBitString();
+            
+            // Then
+            Assert.IsTrue(signatureOidValue == "1.2.840.113549.1.1.11");
+
+            Assert.IsTrue(Enumerable.SequenceEqual(signatureValue, Convert.FromBase64String("b+dty4Lz75CHCdcPFSIsjP7TqxyKlttdEl3ReMAxsP9FyIn3CJhSFx9MSyBkam3bUNcQvn6r/i+A2KlKWEFpgXIZCIObkhBOYi17RnBDbqNTEx/ik6YjW/eSPjcUdTu5SyRBLqU9SA0PmeoeQpfG/pXaq0eayysD1g1AwQr3eBratYOkrbWZSSAu+JM8Hmw90TsjOms4Kn5iel/dFwV10CRdvo2omhBE+tK0yu/X0LV2pSYlHAhB2GSSp699/ohAOWELwEgwqYI0rfdwRgN8NZE61bsk2AG8FPDDDyM7WDK6DxJsZnptneTw5XxdfgLY16yJlwthtzafsH077rczaQ==")));
+        }
+
 
         #region Helper Asserts
 
