@@ -407,10 +407,10 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
             //                           -- registered for use with the
             //                           -- algorithm object identifier value
             Assert.IsTrue(signatureAlgorithm.Identifier.Tag == Asn1Type.Sequence);
-            var signature = signatureAlgorithm.ChildNodes[0];
+            var algorithm = signatureAlgorithm.ChildNodes[0];
             var parameters = signatureAlgorithm.ChildNodes[1];
 
-            Assert.IsTrue(signature.Identifier.Tag == Asn1Type.ObjectIdentifier);
+            Assert.IsTrue(algorithm.Identifier.Tag == Asn1Type.ObjectIdentifier);
             Assert.IsTrue(parameters.Identifier.Tag == Asn1Type.Null);
 
             // extract
@@ -423,9 +423,9 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
 
             // ******* Now read value of only wanted nodes *******
             // first read the value as bytes
-            signature.RawValue = reader.ReadContentAsBuffer(signature);
+            algorithm.RawValue = reader.ReadContentAsBuffer(algorithm);
             // then present appropriately
-            var signatureOidValue = signature.ReadContentAsObjectIdentifier();
+            var signatureOidValue = algorithm.ReadContentAsObjectIdentifier();
 
             signatureValueNode.RawValue = reader.ReadContentAsBuffer(signatureValueNode);
             var signatureValue = signatureValueNode.ReadContentAsBitString();
