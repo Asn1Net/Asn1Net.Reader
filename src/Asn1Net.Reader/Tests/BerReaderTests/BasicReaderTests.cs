@@ -422,6 +422,10 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
             // } Sequence end
 
             // ******* Now read value of only wanted nodes *******
+
+            // extract raw ASN.1 node bytes
+            var tbsCertificateRawValue = reader.ExtractAsn1NodeAsRawData(tbsCertificate);
+
             // first read the value as bytes
             algorithm.RawValue = reader.ReadContentAsBuffer(algorithm);
             // then present appropriately

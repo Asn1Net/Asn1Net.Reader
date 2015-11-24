@@ -389,6 +389,10 @@ namespace Net.Asn1.Reader
         /// <param name="node">Node  whose value shall be read.</param>
         /// <param name="outputBuffer">Reader will read content to this parameter. 
         /// The parameter need to be initialized beforehand with length of actual read node.</param>
+        /// <remarks>
+        /// Basically it can be used only on nodes that have definite length and are primitive, i.e. Integer,BitString,OctetString etc. 
+        /// Sequence and Set are construct types so they are excluded.
+        /// </remarks>
         /// <returns>Content of the given node.</returns>
         public void ReadContentAsBuffer(InternalNode node, byte[] outputBuffer)
         {
@@ -413,6 +417,28 @@ namespace Net.Asn1.Reader
 
             _innerStream.Seek(node.DataOffsetToStream, SeekOrigin.Begin);
             _innerStream.Read(outputBuffer, 0, node.Length);
+        }
+
+        /// <summary>
+        /// Get raw ASN.1 node data (whole TLV => Identifier, Length and Value octets).
+        /// </summary>
+        /// <param name="node">Node that shall be read.</param>
+        /// <returns>Raw data of the given ASN.1 node including Identifier and Length octets.</returns>
+        public byte[] ExtractAsn1NodeAsRawData(InternalNode node)
+        {
+            if (node == null) throw new ArgumentNullException("node");
+
+            byte[] outputBuffer = new byte[node.EndPosition - node.StartPosition];
+
+            if (node.Length > int.MaxValue)
+            {
+                throw new InvalidOperationException("Cannot read values larger than 2GB into buffer");
+            }
+
+            _innerStream.Seek(node.StartPosition, SeekOrigin.Begin);
+            _innerStream.Read(outputBuffer, 0, Convert.ToInt32(node.EndPosition - node.StartPosition));
+
+            return outputBuffer;
         }
 
         #endregion
