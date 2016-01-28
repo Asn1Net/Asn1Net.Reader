@@ -1,6 +1,6 @@
-﻿/*
+﻿/* 
  *  Asn1Net.Reader - Managed ASN.1 Parsing library
- *  Copyright (c) 2014-2015 Peter Polacko
+ *  Copyright (c) 2014-2016 Peter Polacko
  *  Author: Peter Polacko <peter.polacko+asn1net@gmail.com>
  *  
  *  Licensing for open source projects:
@@ -440,6 +440,36 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
             Assert.IsTrue(Enumerable.SequenceEqual(signatureValue, Convert.FromBase64String("b+dty4Lz75CHCdcPFSIsjP7TqxyKlttdEl3ReMAxsP9FyIn3CJhSFx9MSyBkam3bUNcQvn6r/i+A2KlKWEFpgXIZCIObkhBOYi17RnBDbqNTEx/ik6YjW/eSPjcUdTu5SyRBLqU9SA0PmeoeQpfG/pXaq0eayysD1g1AwQr3eBratYOkrbWZSSAu+JM8Hmw90TsjOms4Kn5iel/dFwV10CRdvo2omhBE+tK0yu/X0LV2pSYlHAhB2GSSp699/ohAOWELwEgwqYI0rfdwRgN8NZE61bsk2AG8FPDDDyM7WDK6DxJsZnptneTw5XxdfgLY16yJlwthtzafsH077rczaQ==")));
         }
 
+        [Test]
+        public void ReadIndefiniteLengthObject()
+        {
+            //30 80 04 03 56 78 90 00 00
+
+            // Given
+            // Example taken from: http://msdn.microsoft.com/en-us/library/bb540809%28v=vs.85%29.aspx
+            const string example = @"30 80 04 03 56 78 90 00 00";
+
+            var encoded = Helpers.GetExampleBytes(example);
+            var reader = Helpers.ReaderFromData(encoded);
+            var nodes = reader.ReadToEnd();
+
+            // Then
+            Assert.IsTrue(nodes.ChildNodes.Count == 1);
+
+            var seq = nodes.ChildNodes[0];
+            Assert.IsTrue(seq.HasIndefiniteLength);
+            Assert.IsTrue(seq.ChildNodes.Count == 2);
+
+            var octetString = seq.ChildNodes[0];
+            Assert.IsTrue(octetString.Identifier.Tag == Asn1Type.OctetString);
+            Assert.IsTrue(octetString.Length == 3);
+
+            var eoc = seq.ChildNodes[1];
+            Assert.IsTrue(eoc.Identifier.Class == Asn1Class.Universal);
+            Assert.IsTrue(eoc.Identifier.Constructed == false);
+            Assert.IsTrue(eoc.Identifier.Tag == Asn1Type.Eoc);
+            Assert.IsTrue(eoc.Length == 0);
+        }
 
         #region Helper Asserts
 

@@ -1,6 +1,6 @@
-﻿/*
+﻿/* 
  *  Asn1Net.Reader - Managed ASN.1 Parsing library
- *  Copyright (c) 2014-2015 Peter Polacko
+ *  Copyright (c) 2014-2016 Peter Polacko
  *  Author: Peter Polacko <peter.polacko+asn1net@gmail.com>
  *  
  *  Licensing for open source projects:

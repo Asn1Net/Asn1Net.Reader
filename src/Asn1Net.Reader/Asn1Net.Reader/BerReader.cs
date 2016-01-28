@@ -1,6 +1,6 @@
-﻿/*
+﻿/* 
  *  Asn1Net.Reader - Managed ASN.1 Parsing library
- *  Copyright (c) 2014-2015 Peter Polacko
+ *  Copyright (c) 2014-2016 Peter Polacko
  *  Author: Peter Polacko <peter.polacko+asn1net@gmail.com>
  *  
  *  Licensing for open source projects:
@@ -145,12 +145,20 @@ namespace Net.Asn1.Reader
             if (length >= _innerStream.Length)
                 throw new Exception("Length of ASN.1 node exceeds length of current stream.");
 
+            var hasIndefiniteLengthForm = false;
+            if (length == -1)
+            {
+                hasIndefiniteLengthForm = true;
+                length = DetermineLengthOfIndefiniteLengthNode();
+            }
+
             // set what we parsed so far in internal node class
             _current = new InternalNode()
             {
                 Identifier = identifier,
                 StartPosition = nodeStartPosition,
-                EndPosition = _innerStream.Position + length,
+                HasIndefiniteLength = hasIndefiniteLengthForm,
+                EndPosition = _innerStream.Position + ((hasIndefiniteLengthForm) ? length +2: length), 
                 Length = length,
                 DataOffsetToStream = _innerStream.Position,
                 NodeType = (identifier.Constructed) ? Asn1NodeType.ConstructedStart : Asn1NodeType.Primitive
@@ -161,6 +169,42 @@ namespace Net.Asn1.Reader
                 _current.RawValue = (_current.NodeType == Asn1NodeType.Primitive)
                     ? ReadContentAsBuffer(_current)
                     : null;
+        }
+
+        private int DetermineLengthOfIndefiniteLengthNode()
+        {
+            var length = 0;
+            var streamPosition = _innerStream.Position;
+            var firstByteofEocfound = false;
+            while (true)
+            {
+                var oneByte = _innerStream.ReadByte();
+
+                // reached end of stream
+                if (oneByte == -1)
+                    throw new ArgumentOutOfRangeException("Could not determine actual length of indefinite-length node before reaching end of stream.");
+
+                // found possible EOC (0x00 00)
+                if (oneByte == 0)
+                {
+                    // pretty sure it is EOC, second half of EOC
+                    if (firstByteofEocfound)
+                    {
+                        _innerStream.Seek(streamPosition, SeekOrigin.Begin);
+                        return length;
+                    }
+
+                    // first half of EOC
+                    firstByteofEocfound = true;
+                }
+                else
+                {
+                    // reset EOC
+                    firstByteofEocfound = false;
+                    // increase length value
+                    length++;
+                }
+            }
         }
 
         /// <summary>
@@ -181,9 +225,7 @@ namespace Net.Asn1.Reader
             // indefinite form of length
             if (lengthStart == 0x80)
             {
-                length = -1;
-                // TODO: start supporting
-                throw new NotSupportedException();
+                return -1; // will be corrected later
             }
 
             // check if length is encoded in short form or long form
@@ -310,6 +352,7 @@ namespace Net.Asn1.Reader
             while (next.NodeType != Asn1NodeType.DocumentEnd)
             {
                 next = Read(readContent);
+
                 // only construction node or primitive node will be placed in the map
                 if (next.NodeType == Asn1NodeType.ConstructedStart || next.NodeType == Asn1NodeType.Primitive)
                     currentLevel.ChildNodes.Add(next);

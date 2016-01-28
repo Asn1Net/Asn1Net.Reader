@@ -1,100 +1,106 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	
-	<PropertyGroup>
-		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-		<OutputType>Library</OutputType>
-		<AppDesignerFolder>Properties</AppDesignerFolder>
-		<RootNamespace>Net.Asn1.Reader</RootNamespace>
-		<AssemblyName>Asn1Net.Reader</AssemblyName>
-		<FileAlignment>512</FileAlignment>
-		<ProjectGuid>{3F2C8AC8-796E-4B26-9535-43F66541185F}</ProjectGuid>
-		<Portability Condition="'$(Portability)' == ''">PCL</Portability>
-	</PropertyGroup>
-	<Choose>
-		<When Condition=" '$(Portability)'=='PCL' ">
-			<PropertyGroup>
-				<DefaultLanguage>en-US</DefaultLanguage>
-				<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-				<TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
-				<ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-				<MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-			</PropertyGroup>
-		</When>
-		<When Condition=" '$(Portability)'=='Desktop' ">
-			<PropertyGroup>
-				<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-				<TargetFrameworkProfile />
-			</PropertyGroup>
-			<ItemGroup>
-				<Reference Include="System" />
-				<Reference Include="System.Core" />
-				<Reference Include="System.Numerics" />
-				<Reference Include="System.Xml.Linq" />
-				<Reference Include="System.Data.DataSetExtensions" />
-				<Reference Include="Microsoft.CSharp" />
-				<Reference Include="System.Data" />
-				<Reference Include="System.Xml" />
-			</ItemGroup>
-		</When>
-	</Choose>		
-
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
-		<OutputPath>bin\pcl\Debug\</OutputPath>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<DebugType>pdbonly</DebugType>
-		<Optimize>true</Optimize>
-		<OutputPath>bin\pcl\Release\</OutputPath>
-		<DefineConstants>TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<DocumentationFile>bin\pcl\Release\Asn1Net.Reader.XML</DocumentationFile>
-	</PropertyGroup>
-	<ItemGroup>
-		<Compile Include="Asn1Class.cs" />
-		<Compile Include="Asn1NodeType.cs" />
-		<Compile Include="Asn1Type.cs" />
-		<Compile Include="BerReader.cs" />
-		<Compile Include="Helpers.cs" />
-		<Compile Include="Identifier.cs" />
-		<Compile Include="InternalNode.cs" />
-		<Compile Include="Properties\AssemblyInfo.cs" />
-	</ItemGroup>
-
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)|$(Portability)' == 'Debug|AnyCPU|Desktop' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
-		<OutputPath>bin\Debug\</OutputPath>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)|$(Portability)' == 'Release|AnyCPU|Desktop' ">
-		<DebugType>pdbonly</DebugType>
-		<Optimize>true</Optimize>
-		<OutputPath>bin\Release\</OutputPath>
-		<DefineConstants>TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<DocumentationFile>bin\Release\Asn1Net.Reader.XML</DocumentationFile>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<None Include="Asn1Net.Reader.licenseheader" />
-	</ItemGroup>
-	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition=" '$(Portability)' == 'Desktop' " />
-
-	<Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" Condition=" '$(Portability)' == 'PCL' " />
-	<!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Net.Asn1.Reader</RootNamespace>
+    <AssemblyName>Asn1Net.Reader</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <ProjectGuid>{3F2C8AC8-796E-4B26-9535-43F66541185F}</ProjectGuid>
+    <Portability Condition="'$(Portability)' == ''">PCL</Portability>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(Portability)'=='PCL' ">
+      <PropertyGroup>
+        <DefaultLanguage>en-US</DefaultLanguage>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+        <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(Portability)'=='Desktop' ">
+      <PropertyGroup>
+        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+        <TargetFrameworkProfile />
+      </PropertyGroup>
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Numerics" />
+        <Reference Include="System.Xml.Linq" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\pcl\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\pcl\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\pcl\Release\Asn1Net.Reader.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Asn1Class.cs" />
+    <Compile Include="Asn1NodeType.cs" />
+    <Compile Include="Asn1Type.cs" />
+    <Compile Include="BerReader.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Identifier.cs" />
+    <Compile Include="InternalNode.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)|$(Portability)' == 'Debug|AnyCPU|Desktop' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)|$(Portability)' == 'Release|AnyCPU|Desktop' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Asn1Net.Reader.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Asn1Net.Reader.licenseheader" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition=" '$(Portability)' == 'Desktop' " />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" Condition=" '$(Portability)' == 'PCL' " />
+  <Import Project="..\packages\StyleCop.MSBuild.4.7.49.1\build\StyleCop.MSBuild.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.4.7.49.1\build\StyleCop.MSBuild.Targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\StyleCop.MSBuild.4.7.49.1\build\StyleCop.MSBuild.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\StyleCop.MSBuild.4.7.49.1\build\StyleCop.MSBuild.Targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
