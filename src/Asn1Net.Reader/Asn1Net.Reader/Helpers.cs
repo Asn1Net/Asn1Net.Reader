@@ -81,7 +81,7 @@ namespace Net.Asn1.Reader
 
 
         /// <summary>
-        /// Parse Oid value from Byte[]. More information here http://www.itu.int/rec/dologin_pub.asp?lang=e&id=T-REC-X.690-200811-I!!PDF-E&type=items
+        /// Parse Oid value from Byte[]. More information here <![CDATA[http://www.itu.int/rec/dologin_pub.asp?lang=e&id=T-REC-X.690-200811-I!!PDF-E&type=items]]>
         /// </summary>
         /// <param name="oid">Oid value in byte array.</param>
         /// <returns>Oid in string format</returns>
