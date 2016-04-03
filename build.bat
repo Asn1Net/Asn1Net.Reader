@@ -54,16 +54,15 @@ copy %SRCDIR%\Release\Asn1Net.Reader.dll %OUTDIR%\desktop || exit /b 1
 copy %SRCDIR%\Release\Asn1Net.Reader.XML %OUTDIR%\desktop || exit /b 1
 
 @rem set license variables
-set LICENSEDIR=%OUTDIR%
+set BUILDDIR=build
 
 @rem copy licenses to output directory
-copy LICENSE %LICENSEDIR%\license.txt || exit /b 1
-copy LICENSE-3RD-PARTY %LICENSEDIR%\3rd-party-license.txt || exit /b 1
-copy agpl-3.0.txt %LICENSEDIR% || exit /b 1
-copy README.md %LICENSEDIR%\Readme.txt || exit /b 1
+copy %SRCDIR%\Release\LICENSE.txt %BUILDDIR% || exit /b 1
+copy %SRCDIR%\Release\NOTICE.txt %BUILDDIR% || exit /b 1
+copy LICENSE-3RD-PARTY %BUILDDIR%\3rd-party-license.txt || exit /b 1
+copy README.md %BUILDDIR%\Readme.txt || exit /b 1
 
 @rem copy make_nuget.bat and nuspec file
-set BUILDDIR=build
 copy make_nuget.bat %BUILDDIR% || exit /b 1
 copy Asn1Net.Reader.nuspec %BUILDDIR% || exit /b 1
 

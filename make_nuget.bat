@@ -11,6 +11,12 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\vsvars32
 set cur_dir=%CD%
 call %devenv% || exit /b 1
 
+
+IF EXIST nuget.exe goto restore
+
+echo Downloading nuget.exe
+@powershell -NoProfile -ExecutionPolicy unrestricted -Command "$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile 'nuget.exe'"
+
 set NUGETDIR=nuget
 
 rmdir /S /Q %NUGETDIR%
@@ -22,9 +28,9 @@ copy Asn1Net.Reader\pcl\*.xml "%NUGETDIR%\Asn1Net.Reader\lib\portable-net45+netc
 copy Asn1Net.Reader\desktop\*.dll %NUGETDIR%\Asn1Net.Reader\lib\net40 || exit /b 1
 copy Asn1Net.Reader\desktop\*.xml %NUGETDIR%\Asn1Net.Reader\lib\net40 || exit /b 1
 
-copy Asn1Net.Reader\license.txt %NUGETDIR%\Asn1Net.Reader || exit /b 1
-copy Asn1Net.Reader\agpl-3.0.txt %NUGETDIR%\Asn1Net.Reader || exit /b 1
-copy Asn1Net.Reader\3rd-party-license.txt %NUGETDIR%\Asn1Net.Reader || exit /b 1
+copy LICENSE.txt %NUGETDIR%\Asn1Net.Reader || exit /b 1
+copy NOTICE.txt %NUGETDIR%\Asn1Net.Reader || exit /b 1
+copy 3rd-party-license.txt %NUGETDIR%\Asn1Net.Reader || exit /b 1
 
 copy Asn1Net.Reader.nuspec %NUGETDIR%\Asn1Net.Reader || exit /b 1
 
