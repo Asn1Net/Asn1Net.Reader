@@ -1,13 +1,21 @@
-﻿/* 
- *  Asn1Net.Reader - Managed ASN.1 Parsing library
- *  Copyright (c) 2014-2016 Peter Polacko
- *  Author: Peter Polacko <peter.polacko+asn1net@gmail.com>
- *  
- *  Licensing for open source projects:
- *  Asn1Net.Reader is available under the terms of the GNU Affero General 
- *  Public License version 3 as published by the Free Software Foundation.
- *  Please see <http://www.gnu.org/licenses/agpl-3.0.html> for more details.
+﻿/*
+ *  Copyright 2012-2016 The Asn1Net Project
  *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+/*
+ *  Written for the Asn1Net project by:
+ *  Peter Polacko <peter.polacko+asn1net@gmail.com>
  */
 
 using System;
@@ -236,6 +244,10 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
         [TestCase("09 01 41", 1, double.NegativeInfinity)]
         [TestCase("09 01 42", 1, double.NaN)]
         [TestCase("09 01 43", 1, -0.0d)]
+        [TestCase("09 08 03 33 31 34 2E 45 2D 32", 8, 3.14)] // base 10
+        [TestCase("09 0A 03 31 35 36 32 35 2E 45 2D 35", 10, 0.15625)] // base 10
+        [TestCase("09 0A 03 31 30 30 30 31 2E 45 2B 30", 10001)] // base 10
+        [Category("REAL")]
         public void ReadReal(string example, int nodeLenth, double result)
         {
             // Given

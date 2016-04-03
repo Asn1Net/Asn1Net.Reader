@@ -90,6 +90,14 @@
   <ItemGroup>
     <None Include="Asn1Net.Reader.licenseheader" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NOTICE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition=" '$(Portability)' == 'Desktop' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" Condition=" '$(Portability)' == 'PCL' " />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
