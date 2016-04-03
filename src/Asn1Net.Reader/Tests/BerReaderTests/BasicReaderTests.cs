@@ -246,7 +246,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
         [TestCase("09 01 43", 1, -0.0d)]
         [TestCase("09 08 03 33 31 34 2E 45 2D 32", 8, 3.14)] // base 10
         [TestCase("09 0A 03 31 35 36 32 35 2E 45 2D 35", 10, 0.15625)] // base 10
-        [TestCase("09 0A 03 31 30 30 30 31 2E 45 2B 30", 10001)] // base 10
+        [TestCase("09 0A 03 31 30 30 30 31 2E 45 2B 30", 10, 10001)] // base 10
         [Category("REAL")]
         public void ReadReal(string example, int nodeLenth, double result)
         {
