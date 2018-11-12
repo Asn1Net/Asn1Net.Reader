@@ -12,6 +12,7 @@
 
 # build output
 [Bb]uild
+.nuget
 
 # Build results
 [Dd]ebug/
