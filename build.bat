@@ -3,24 +3,27 @@ setlocal
 
 @rem preparing environment
 
-@IF EXIST "c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\vsvars32.bat" SET devenv="c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\vsvars32.bat"
-@IF EXIST "c:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\vsvars32.bat" SET devenv="c:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\vsvars32.bat"
-@IF EXIST "c:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Tools\vsvars32.bat" SET devenv="c:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Tools\vsvars32.bat"
-@IF EXIST "c:\Program Files\Microsoft Visual Studio 11.0\Common7\Tools\vsvars32.bat" SET devenv="c:\Program Files\Microsoft Visual Studio 11.0\Common7\Tools\vsvars32.bat"
-@IF EXIST "c:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\vsvars32.bat" SET devenv="C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\vsvars32.bat"
-@IF EXIST "C:\Program Files\Microsoft Visual Studio 12.0\Common7\Tools\vsvars32.bat" SET devenv="C:\Program Files\Microsoft Visual Studio 12.0\Common7\Tools\vsvars32.bat"
+@rem Initialize Visual Studio build environment:
+@rem - Visual Studio 2017 Community/Professional/Enterprise is the preferred option
+@rem - Visual Studio 2015 is the fallback option (which might or might not work)
+@set tools=
+@set tmptools="c:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\vsvars32.bat"
+@if exist %tmptools% set tools=%tmptools%
+@set tmptools="c:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsMSBuildCmd.bat"
+@if exist %tmptools% set tools=%tmptools%
+@set tmptools="c:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\Tools\VsMSBuildCmd.bat"
+@if exist %tmptools% set tools=%tmptools%
+@set tmptools="c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\Tools\VsMSBuildCmd.bat"
+@if exist %tmptools% set tools=%tmptools%
+@if not defined tools goto :error
+call %tools% || exit /b 1
 
 
 set cur_dir=%CD%
-call %devenv% || exit /b 1
 
 set SLNPATH=src\Asn1Net.Reader\Asn1Net.Reader.sln
 
 IF EXIST .nuget\nuget.exe goto restore
-
-echo Downloading nuget.exe
-md .nuget
-@powershell -NoProfile -ExecutionPolicy unrestricted -Command "$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile '.nuget\nuget.exe'"
 
 :restore
 IF EXIST packages goto run
@@ -30,9 +33,9 @@ IF EXIST packages goto run
 @rem cleanin sln
 msbuild %SLNPATH% /p:Configuration=Release /target:Clean || exit /b 1
 @rem build desktop version (.NET 4.0)
-msbuild %SLNPATH% /p:Configuration=Release /target:Build || exit /b 1
+msbuild %SLNPATH% /p:Configuration=Release /target:Restore /target:Build || exit /b 1
 @rem build PCL version
-msbuild %SLNPATH% /p:Configuration=Release /p:Portability=Desktop /target:Build || exit /b 1
+msbuild %SLNPATH% /p:Configuration=Release /p:Portability=Desktop /target:Restore /target:Build || exit /b 1
 
 endlocal
 
