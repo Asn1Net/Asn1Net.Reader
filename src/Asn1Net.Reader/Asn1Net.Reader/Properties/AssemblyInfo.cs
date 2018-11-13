@@ -29,7 +29,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Peter Polacko")]
 [assembly: AssemblyProduct("Asn1Net.Reader")]
-[assembly: AssemblyCopyright("Copyright © 2014-2015 Peter Polacko")]
+[assembly: AssemblyCopyright("Copyright © 2014-2018 Peter Polacko")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]
