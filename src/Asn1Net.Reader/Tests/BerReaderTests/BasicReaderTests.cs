@@ -173,7 +173,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
         [Test]
         public void ReadBoolean()
         {
-            var encoded = File.ReadAllBytes("tests/bool.asn1");
+            var encoded = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "bool.asn1"));
 
             // When
             var reader = Helpers.ReaderFromData(encoded);
@@ -191,7 +191,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
         [Test]
         public void ReadBitString()
         {
-            var encoded = File.ReadAllBytes("tests/bitstring.asn1");
+            var encoded = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "bitstring.asn1"));
 
             // When
             var reader = Helpers.ReaderFromData(encoded);
@@ -220,7 +220,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
         [Test]
         public void ReadEnumerated()
         {
-            var encoded = File.ReadAllBytes("tests/integer.asn1");
+            var encoded = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "integer.asn1"));
 
             // When
             var reader = Helpers.ReaderFromData(encoded);
@@ -385,7 +385,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
         [Test]
         public void ReadCertificateSignature()
         {
-            var encoded = File.ReadAllBytes("tests/github.cer.asn1");
+            var encoded = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "github.cer.asn1"));
 
             // When
             var reader = Helpers.ReaderFromData(encoded);

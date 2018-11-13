@@ -36,7 +36,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
         [Test]
         public void OneRootSimpleTest()
         {
-            var encoded = File.ReadAllBytes("tests/asn1_sample_slim.asn1");
+            var encoded = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "asn1_sample_slim.asn1"));
             // When
             var reader = Helpers.ReaderFromData(encoded);
             var result = reader.ReadToEnd();
@@ -154,7 +154,7 @@ namespace Net.Asn1.Reader.Tests.BerReaderTests
         [Test]
         public void P7ChainTest()
         {
-            var encoded = File.ReadAllBytes("tests/asn1_github_certificate_chain.asn1");
+            var encoded = File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "asn1_github_certificate_chain.asn1"));
             // When
             using (var reader = Helpers.ReaderFromData(encoded))
             {
